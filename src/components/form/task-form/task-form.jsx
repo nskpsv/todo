@@ -1,75 +1,91 @@
-import { useState } from "react";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
+import { AttachedFilesController } from "../attached-files-controller/attached-files-controller";
 import { FormField } from "../form-field/form-field";
 
-const emptyTask = {
-  title: "",
-  description: "",
-  deadline: "",
-  attachedFiles: [],
-  status: "",
-};
-
-export const TaskForm = ({ task = emptyTask, onSave, onCancel }) => {
+export const TaskForm = ({ task, taskId, onSave, onCancel }) => {
   const [state, setState] = useState(task);
+  const [saving, setSaving] = useState(false);
+
   const fieldChangeHandler = ({ target: { name, value } }) => {
     setState(Object.assign({}, state, { [name]: value }));
   };
 
-  const attachHandler = () => {};
-
   const submitHandler = (e) => {
     e.preventDefault();
-    onSave(state);
+    e.stopPropagation();
+    setSaving(true);
+    if (!taskId) {
+      onSave(state);
+    }
   };
 
-  const cancelHandler = (e) => {
-    e.preventDefault();
-    onCancel();
+  const attachHandler = (urlList) => {
+    if (urlList.length) {
+      onSave(
+        Object.assign({}, state, {
+          attachedFiles: state.attachedFiles.concat(urlList),
+        })
+      );
+    } else {
+      onSave(state);
+    }
   };
+
+  useEffect(() => {
+    if (task !== state) {
+      setState(task);
+    }
+  }, [task]);
 
   return (
-    <form name="edit_todo" onSubmit={submitHandler}>
+    <form onSubmit={submitHandler}>
       <div>
         <FormField
-          placeholder="Заголовок задачи"
+          label="Заголовок задачи"
           type="text"
           name="title"
           value={state.title}
           onChange={fieldChangeHandler}
+          required
         />
       </div>
       <div>
         <FormField
           tag="textarea"
-          placeholder="Описание задачи"
+          label="Описание задачи"
+          name="description"
           rows="10"
           cols="50"
-          name="description"
+          resize="none"
           value={state.description}
           onChange={fieldChangeHandler}
         />
       </div>
       <div>
         <FormField
-          type="datetime-local"
+          label="Сделать до: "
+          type="date"
           name="deadline"
           value={state.deadline}
           onChange={fieldChangeHandler}
+          min={dayjs().format("YYYY-MM-DD")}
+          required
         />
       </div>
+      <AttachedFilesController
+        list={task?.attachedFiles}
+        taskId={taskId}
+        onSuccessfulAttach={attachHandler}
+        startUpload={saving}
+      />
       <div>
-        <FormField
-          type="file"
-          name="attach"
-          onChange={attachHandler}
-        />
-      </div>
-      <div>{state.attachedFiles}</div>
-      <div>
-        <button onClick={submitHandler} disabled={!state.title} type="submit">
+        <button type="submit" disabled={saving}>
           Сохранить
         </button>
-        <button onClick={cancelHandler}>Отмена</button>
+        <button type="button" disabled={saving} onClick={onCancel}>
+          Отмена
+        </button>
       </div>
     </form>
   );

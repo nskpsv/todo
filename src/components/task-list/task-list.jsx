@@ -1,10 +1,19 @@
 import { TaskItem } from "../task-item/task-item";
 
-export const TaskList = ({ list = null, ...other }) => {
+export const TaskList = ({ list = null, fetching, onAddTask, ...other }) => {
+  const addHandler = (e) => {
+    e.stopPropagation();
+    onAddTask();
+  };
+
   if (!list) {
     return (
       <div>
-        <p>Нечего делать ¯\_(ツ)_/¯</p>
+        {fetching && !list ? (
+          <h1>Загрузка ...</h1>
+        ) : (
+          <p>Нечего делать ¯\_(ツ)_/¯</p>
+        )}
       </div>
     );
   }
@@ -12,12 +21,10 @@ export const TaskList = ({ list = null, ...other }) => {
   return (
     <div>
       <div>
-        <button onClick={other.onEdit}>Добавить задачу</button>
+        <button onClick={addHandler}>Добавить задачу</button>
       </div>
-      {Object.keys(list).map((key) => {
-        return (
-          <TaskItem task={list[key]} id={key} key={key} {...other} />
-        );
+      {Object.keys(list || {}).map((key) => {
+        return <TaskItem task={list[key]} id={key} key={key} {...other} />;
       })}
     </div>
   );

@@ -2,36 +2,44 @@ import dayjs from "dayjs";
 
 require("dayjs/locale/ru");
 
-export const TaskItem = ({ task, id, onComplete, onEdit, onDelete }) => {
+export const taskStatus = {
+  IN_PROGRESS: "in progress",
+  EXPIRED: "expired",
+  COMPLETED: "completed",
+};
+
+export const getEmptyTask = () => {
+  return {
+    title: "",
+    description: "",
+    deadline: "",
+    attachedFiles: [],
+    status: taskStatus.IN_PROGRESS,
+  };
+};
+
+export const TaskItem = ({
+  task,
+  id,
+  onCompleteTask,
+  onEditTask,
+  onDeleteTask,
+}) => {
   if (!task) {
     return null;
   }
 
-  const checkHandler = (handler) => {
-    if (!handler) {
-      throw new Error(`Не назначен обработчик!`);
-    }
+  const completeHandler = () => {
+    onCompleteTask(id);
   };
 
-  const completeHandler = (e) => {
-    e.stopPropagation();
-    checkHandler(onComplete);
-    onComplete(id);
+  const editHandler = () => {
+    onEditTask(id);
   };
 
-  const editHandler = (e) => {
-    e.stopPropagation();
-    checkHandler(onEdit);
-    onEdit(id);
+  const deleteHandler = () => {
+    onDeleteTask(id);
   };
-
-  const deleteHandler = (e) => {
-    e.stopPropagation();
-    checkHandler(onEdit);
-    onDelete(id);
-  }
-
-
 
   return (
     <div>
@@ -45,17 +53,41 @@ export const TaskItem = ({ task, id, onComplete, onEdit, onDelete }) => {
         <p>
           <span>Сделать до: </span>
           {dayjs(task.deadline).locale("ru").format("DD MMMM YYYY г.")}
+          {task.status === taskStatus.EXPIRED && (
+            <span style={{ color: "red" }}> Просрочена</span>
+          )}
+          {task.status === taskStatus.COMPLETED && (
+            <span style={{ color: "green" }}> Выполнена</span>
+          )}
         </p>
       </div>
+      {
+      task.attachedFiles.length ? (
+        <div>
+          <p>Прикреплённые файлы:</p>
+          {task.attachedFiles}
+        </div>
+      ) : null
+      }
       <div>
-        <p>Прикреплённые файлы:</p>
-        {task.attachedFiles}
-      </div>
-      <div>
-        <button onClick={completeHandler}>Отметить как выполненную</button>
-        <button onClick={editHandler}>Редактировать</button>
+        <button
+          onClick={completeHandler}
+          disabled={
+            task.status === taskStatus.COMPLETED ||
+            task.status === taskStatus.EXPIRED
+          }
+        >
+          Отметить как выполненную
+        </button>
+        <button
+          onClick={editHandler}
+          disabled={task.status === taskStatus.COMPLETED}
+        >
+          Редактировать
+        </button>
         <button onClick={deleteHandler}>Удалить</button>
       </div>
+      <hr />
     </div>
   );
 };
