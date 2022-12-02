@@ -21,8 +21,6 @@ export const TaskForm = ({ task, taskId, onSave, onCancel }) => {
   };
 
   const updateAttachedFiles = (filesList) => {
-    console.log('task form');
-    console.log(filesList);
     onSave(
       Object.assign({}, state, {
         attachedFiles: filesList,

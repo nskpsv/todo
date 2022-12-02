@@ -24,8 +24,6 @@ export const updateTask = async (taskId, task) => {
 };
 
 export const deleteTask = async (taskId) => {
-  const result = await deleteDoc(doc(db, "todos", taskId));
-  console.log('delete');
-  console.log(result);
+  await deleteDoc(doc(db, "todos", taskId));
   return true;
 };

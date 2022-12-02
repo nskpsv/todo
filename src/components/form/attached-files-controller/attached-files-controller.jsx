@@ -32,20 +32,16 @@ export const AttachedFilesController = ({
     const data = event.target;
     if (data.checked) {
       deleteFilesList.current.push(data.value);
-      console.log(data.value);
     } else {
       deleteFilesList.current.splice(
         deleteFilesList.current.findIndex((url) => url === data.value),
         1
       );
     }
-    console.log(deleteFilesList.current);
   };
 
   const deleteCheckedFileSuccess = (file) => {
     successfulDeletedFiles.current.push(file);
-    console.log("deleted files");
-    console.log(successfulDeletedFiles.current);
     if (
       successfulDeletedFiles.current.length === deleteFilesList.current.length
     ) {
@@ -54,22 +50,17 @@ export const AttachedFilesController = ({
   };
 
   const deleteCheckedFiles = () => {
-    console.log("delete");
-    console.log(deleteFilesList.current);
     if (deleteFilesList.current.length) {
-    deleteFilesList.current.forEach((url) => {
-      console.log("deleting" + url);
-      deleteObject(ref(storage, url))
-        .then((e) => {
-          console.log("delete result");
-          console.log(e);
-          deleteCheckedFileSuccess(url);
-        })
-        .catch((error) => alert("Ошибка: " + error));
-    })
-  } else {
-    setDeleteSuccessfull(true);
-  }
+      deleteFilesList.current.forEach((url) => {
+        deleteObject(ref(storage, url))
+          .then((e) => {
+            deleteCheckedFileSuccess(url);
+          })
+          .catch((error) => alert("Ошибка: " + error));
+      });
+    } else {
+      setDeleteSuccessfull(true);
+    }
   };
 
   const onSelectNewFiles = (event) => {
@@ -84,17 +75,13 @@ export const AttachedFilesController = ({
 
   const uploadNewFileSuccess = (file) => {
     successfulUploadedFiles.current.push(file);
-    console.log("uploadSuccess");
-    console.log(successfulUploadedFiles.current);
     if (successfulUploadedFiles.current.length === uploadFilesList.length) {
       setUploadSuccessful(true);
     }
   };
 
   const uploadNewFiles = () => {
-    console.log("upload");
     if (uploadFilesList.length) {
-      console.log("upload if");
       uploadFilesList.forEach((item, index) => {
         const meta = { contentType: item.file.type };
         const uploadTask = uploadBytesResumable(
@@ -112,9 +99,7 @@ export const AttachedFilesController = ({
             );
             setUploadFilesList(clone);
           },
-          (error) => {
-            console.log(error.code);
-          },
+          (error) => { alert(error)},
           () => {
             getDownloadURL(uploadTask.snapshot.ref).then((url) => {
               uploadNewFileSuccess({
@@ -126,28 +111,20 @@ export const AttachedFilesController = ({
         );
       });
     } else {
-      console.log("upload else");
       setUploadSuccessful(true);
     }
   };
 
   useEffect(() => {
-    console.log("effect");
     if (savingStarted && taskId) {
-      console.log("effect if");
       uploadNewFiles();
       deleteCheckedFiles();
     }
   }, [savingStarted, taskId]);
 
   useEffect(() => {
-    console.log("uploadSuccessful " + uploadSuccessful);
-    console.log("deleteSuccessful " + deleteSuccessfull);
     if (uploadSuccessful && deleteSuccessfull) {
       const finalAttachedFilesList = Array.from(list);
-
-      console.log("after clone");
-      console.log(finalAttachedFilesList);
 
       successfulDeletedFiles.current.forEach((url) =>
         finalAttachedFilesList.splice(
@@ -155,13 +132,9 @@ export const AttachedFilesController = ({
           1
         )
       );
-      console.log("after splice");
-      console.log(finalAttachedFilesList);
       finalAttachedFilesList.splice(0, 0, ...successfulUploadedFiles.current);
 
-      console.log("final list");
-      console.log(finalAttachedFilesList);
-      onReady(finalAttachedFilesList)
+      onReady(finalAttachedFilesList);
     }
   }, [uploadSuccessful, deleteSuccessfull]);
 
