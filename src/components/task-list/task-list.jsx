@@ -1,8 +1,8 @@
 import { TaskItem } from "../task-item/task-item";
 
 export const TaskList = ({ list = null, fetching, onAddTask, ...other }) => {
-  const addHandler = (e) => {
-    e.stopPropagation();
+  const addHandler = (event) => {
+    event.stopPropagation();
     onAddTask();
   };
 

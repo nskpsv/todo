@@ -11,25 +11,23 @@ export const TaskForm = ({ task, taskId, onSave, onCancel }) => {
     setState(Object.assign({}, state, { [name]: value }));
   };
 
-  const submitHandler = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const submitHandler = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
     setSaving(true);
     if (!taskId) {
       onSave(state);
     }
   };
 
-  const attachHandler = (urlList) => {
-    if (urlList.length) {
-      onSave(
-        Object.assign({}, state, {
-          attachedFiles: state.attachedFiles.concat(urlList),
-        })
-      );
-    } else {
-      onSave(state);
-    }
+  const updateAttachedFiles = (filesList) => {
+    console.log('task form');
+    console.log(filesList);
+    onSave(
+      Object.assign({}, state, {
+        attachedFiles: filesList,
+      })
+    );
   };
 
   useEffect(() => {
@@ -74,10 +72,10 @@ export const TaskForm = ({ task, taskId, onSave, onCancel }) => {
         />
       </div>
       <AttachedFilesController
-        list={task?.attachedFiles}
         taskId={taskId}
-        onSuccessfulAttach={attachHandler}
-        startUpload={saving}
+        savingStarted={saving}
+        list={state?.attachedFiles}
+        onReady={updateAttachedFiles}
       />
       <div>
         <button type="submit" disabled={saving}>

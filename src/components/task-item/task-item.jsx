@@ -61,14 +61,16 @@ export const TaskItem = ({
           )}
         </p>
       </div>
-      {
-      task.attachedFiles.length ? (
+      {task.attachedFiles.length ? (
         <div>
           <p>Прикреплённые файлы:</p>
-          {task.attachedFiles}
+          {task.attachedFiles.map((file, index) => (
+            <div key={index}>
+              <a href={file.url}>{file.name}</a>
+            </div>
+          ))}
         </div>
-      ) : null
-      }
+      ) : null}
       <div>
         <button
           onClick={completeHandler}

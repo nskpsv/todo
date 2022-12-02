@@ -10,14 +10,11 @@ export const TaskEditor = () => {
   const [fetching, setFetching] = useState("true");
 
   const saveTaskHandler = async (task) => {
-    console.log("save task");
     if (taskId) {
-      console.log("save task if");
       updateTask(taskId, task).then(() => {
         history.back();
       });
     } else {
-      console.log("save task else");
       addTask(task).then((id) => {
         setTaskId(id);
       });
