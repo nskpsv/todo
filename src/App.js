@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import { Index } from "./pages/index";
+import { Index } from "./pages/index/index";
 import { TaskEditor } from "./pages/task-editor/task-editor";
 
 const isSameOrAfter = require("dayjs/plugin/isSameOrAfter");
