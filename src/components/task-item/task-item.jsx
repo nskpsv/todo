@@ -1,24 +1,8 @@
+import React from 'react';
 import dayjs from "dayjs";
+import { taskStatus } from '../../constants/task-status';
 
-require("dayjs/locale/ru");
-
-export const taskStatus = {
-  IN_PROGRESS: "in progress",
-  EXPIRED: "expired",
-  COMPLETED: "completed",
-};
-
-export const getEmptyTask = () => {
-  return {
-    title: "",
-    description: "",
-    deadline: "",
-    attachedFiles: [],
-    status: taskStatus.IN_PROGRESS,
-  };
-};
-
-export const TaskItem = ({
+export const TaskItem = React.memo(({
   task,
   id,
   onCompleteTask,
@@ -66,7 +50,7 @@ export const TaskItem = ({
           <p>Прикреплённые файлы:</p>
           {task.attachedFiles.map((file, index) => (
             <div key={index}>
-              <a href={file.url}>{file.name}</a>
+              <a href={file.url} target="_blank">{file.name}</a>
             </div>
           ))}
         </div>
@@ -92,4 +76,4 @@ export const TaskItem = ({
       <hr />
     </div>
   );
-};
+});

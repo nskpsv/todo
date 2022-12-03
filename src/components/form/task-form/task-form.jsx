@@ -8,31 +8,19 @@ export const TaskForm = ({ task, taskId, onSave, onCancel }) => {
   const [saving, setSaving] = useState(false);
 
   const fieldChangeHandler = ({ target: { name, value } }) => {
-    setState(Object.assign({}, state, { [name]: value }));
+    setState({ ...state, [name]: value });
   };
 
   const submitHandler = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setSaving(true);
-    if (!taskId) {
-      onSave(state);
-    }
+
   };
 
   const updateAttachedFiles = (filesList) => {
-    onSave(
-      Object.assign({}, state, {
-        attachedFiles: filesList,
-      })
-    );
+    onSave({
+      ...state,
+      attachedFiles: filesList,
+    });
   };
-
-  useEffect(() => {
-    if (task !== state) {
-      setState(task);
-    }
-  }, [task]);
 
   return (
     <form onSubmit={submitHandler}>

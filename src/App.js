@@ -1,22 +1,20 @@
 import { useEffect, useState } from "react";
-import dayjs from "dayjs";
 import { Index } from "./pages/index/index";
 import { TaskEditor } from "./pages/task-editor/task-editor";
+import { onChangeHistory } from "./utils/history";
 
-const isSameOrAfter = require("dayjs/plugin/isSameOrAfter");
-dayjs.extend(isSameOrAfter);
+import "dayjs/locale/ru";
 
 export const App = () => {
-  
-  const [path, setPath] = useState("");
+  const [path, setPath] = useState(window.location.pathname);
 
   useEffect(() => {
- setPath(window.location.pathname);
-  }, [window.location.pathname])
+    onChangeHistory(() => { setPath(window.location.pathname); });
 
-  window.onpopstate = () => {
-    setPath(window.location.pathname);
-  };
+    window.onpopstate = () => {
+      setPath(window.location.pathname);
+    };
+  }, []);
 
   return (
     <>

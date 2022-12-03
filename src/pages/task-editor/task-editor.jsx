@@ -1,28 +1,38 @@
 import { TaskForm } from "../../components/form/task-form/task-form";
 import { useEffect, useState } from "react";
 import { addTask, getTask, updateTask } from "../../services/task-api";
-import { getEmptyTask } from "../../components/task-item/task-item";
+import { taskStatus } from "../../constants/task-status";
+import { history } from "../../utils/history";
+
+export const getEmptyTask = () => {
+  return {
+    title: "",
+    description: "",
+    deadline: "",
+    attachedFiles: [],
+    status: taskStatus.IN_PROGRESS,
+  };
+};
 
 export const TaskEditor = () => {
-  const history = window.history;
-  const [taskId, setTaskId] = useState(history.state?.taskId);
+  const [taskId, setTaskId] = useState(window.location.pathname.replace('/edit/', ''));
   const [task, setTask] = useState(getEmptyTask());
-  const [fetching, setFetching] = useState("true");
+  const [fetching, setFetching] = useState(true);
 
   const saveTaskHandler = async (task) => {
     if (taskId) {
       updateTask(taskId, task).then(() => {
-        history.back();
+        history.pushState('/');
       });
     } else {
       addTask(task).then((id) => {
-        setTaskId(id);
+        history.pushState('/');
       });
     }
   };
 
   const cancelHandler = () => {
-    history.back();
+    history.pushState('/');
   };
 
   useEffect(() => {

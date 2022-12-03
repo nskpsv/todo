@@ -8,6 +8,23 @@ import {
 } from "firebase/storage";
 import { FormField } from "../form-field/form-field";
 
+const files = [
+  {
+    id: 0,// У загруженного файла должен быть
+    state: 'uploded',
+    url: 'lel.png',
+    wantRemove: true,
+    error: 'Не удалось удалить',
+  },
+  {
+    state: 'idle',
+    url: 'lel.png',
+    data: '', // buffer файла если нада
+    progress: 0,
+    error: 'Не удалось загрузить, слишком большой размер',
+  }
+]
+
 export const AttachedFilesController = ({
   list,
   taskId,
@@ -127,6 +144,7 @@ export const AttachedFilesController = ({
       const finalAttachedFilesList = Array.from(list);
 
       successfulDeletedFiles.current.forEach((url) =>
+
         finalAttachedFilesList.splice(
           finalAttachedFilesList.findIndex((file) => file.url === url),
           1
@@ -172,7 +190,7 @@ export const AttachedFilesController = ({
         </div>
       )}
       <hr />
-      {uploadFilesList[0] && (
+      {!!uploadFilesList.length && (
         <div>
           <p>Добавленные файлы:</p>
           {uploadFilesList.map((item, index) => {

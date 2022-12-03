@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { db } from "../../store/store";
 import {
   getDocs,
@@ -7,40 +8,50 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { taskStatus } from "../../components/task-item/task-item";
+import { taskStatus } from "../../constants/task-status";
 import { TaskList } from "../../components/task-list/task-list";
-import dayjs from "dayjs";
+import { history } from "../../utils/history";
 
 export const Index = () => {
   const [todoList, setTodoList] = useState(undefined);
   const [fetching, setFetching] = useState(false);
 
   const editHandler = (id) => {
-    window.history.pushState({ taskId: id }, null, `/edit/${id}`);
-    window.history.go();
+    history.pushState(null, null, `/edit/${id}`);
   };
 
   const addHandler = () => {
-    window.history.pushState(null, null, `/edit/new-task`);
-    window.history.go();
+    history.pushState(null, null, `/edit/new-task`);
   };
 
   const deleteHandler = async (id) => {
+    const clone = { ...todoList };
+
     setFetching(true);
 
-    const clone = Object.assign({}, todoList);
+    try {
+      await deleteDoc(doc(db, "todos", id));
+      // кетч нужно добавить на все действия
+    } catch (error) {
+      setFetching(false);
 
-    await deleteDoc(doc(db, "todos", id));
+      return;
+    }
 
     delete clone[id];
     setTodoList(clone);
     setFetching(false);
   };
 
-  const completeHandler = async (id) => {
+  const handleComplite = async (id) => {
+    const clone = { ...todoList };
+
     setFetching(true);
-    const clone = Object.assign({}, todoList);
-    clone[id].status = taskStatus.COMPLETED;
+
+    clone[id] = {
+      ...clone[id],
+      status: taskStatus.COMPLETED,
+    };
 
     await setDoc(doc(db, "todos", id), clone[id]);
 
@@ -81,7 +92,7 @@ export const Index = () => {
           list={todoList}
           fetching={fetching}
           onAddTask={addHandler}
-          onCompleteTask={completeHandler}
+          onCompleteTask={handleComplite}
           onEditTask={editHandler}
           onDeleteTask={deleteHandler}
         />
