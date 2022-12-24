@@ -1,25 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import { Index } from "./pages/index/index";
+import { TaskEditor } from "./pages/task-editor/task-editor";
+import { onChangeHistory } from "./utils/history";
 
-function App() {
+import "dayjs/locale/ru";
+
+export const App = () => {
+  const [path, setPath] = useState(window.location.pathname);
+
+  useEffect(() => {
+    onChangeHistory(() => { setPath(window.location.pathname); });
+
+    window.onpopstate = () => {
+      setPath(window.location.pathname);
+    };
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      {path === '/' && <Index />}
+      {path.includes('/edit/') && <TaskEditor />}
+    </>
   );
-}
-
-export default App;
+};
